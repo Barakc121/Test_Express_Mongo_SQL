@@ -1,0 +1,29 @@
+{
+  "name": "test_express_mongo_sql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Barakc121/Test_Express_Mongo_SQL.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Barakc121/Test_Express_Mongo_SQL/issues"
+  },
+  "homepage": "https://github.com/Barakc121/Test_Express_Mongo_SQL#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mysql2": "^3.16.0",
+    "nodemon": "^3.1.11",
+    "sql2": "^0.0.1"
+  }
+}
