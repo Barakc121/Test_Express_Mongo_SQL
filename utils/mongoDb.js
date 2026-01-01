@@ -24,61 +24,78 @@ export async function initMongoDb() {
   }
 }
 
-export async function createuser(req, res) {
+export const createUser = async (req, res) => {
+  try {
+    const mongoConn = req.mongoConn;
+    const { body } = req;
+    const usersCollection = mongoConn.collection("users");
+
+    const now = new Date();
+
+    const newUser = {
+      username: body.username,
+      password: body.password,
+    };
+    const result = await usersCollection.insertOne(newUser);
+
+    const user = await usersCollection.findOne({
+      _id: result.insertedId,
+    });
+
+    res.status(201).send("created user");
+  } catch (err) {
+    res.status(500).send({ err });
+  }
+};
+
+export const getUser = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "Missing fields" });
-    }
+    const user = await req.mongoConn
+      .collection("users")
+      .findOne({ username: username });
 
-    // MongoDB
-    await req.mongoDb.collection("users").insertOne({
-      name,
-      password,
-    });
+    if (user.password != password) res.status(401).send("is not a password");
+    if (!user) res.status(404).send("User not found");
 
-    // MySQL
-    await req.mysqlConn.query(
-      "INSERT INTO users (name, email, password) VALUES (?, ?)",
-      [name, password]
-    );
-    res.status(201).json({ message: "User created" });
+    delete user._id;
+
+    res.status(200).send("create", { data: user });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).send(err);
   }
-}
-// await createuser({ body: { username: "barak", password: "1234" } });
+};
 
 // GET /api/orders/:id
-export async function getOrder(req, res) {
-  try {
-    const db = req.mongoDb;
-    const { id } = req.params;
-    if (!ObjectId.isValid(id)) return res.status(400).json({ error: "Invalid ID" });
+// export async function getOrder(req, res) {
+//   try {
+//     const db = req.mongoDb;
+//     const { id } = req.params;
+//     if (!ObjectId.isValid(id))
+//       return res.status(400).json({ error: "Invalid ID" });
 
-    const order = await db.collection("users").findOne({ _id: new ObjectId(id) });
-    if (!order) return res.status(404).json({ error: "users not found" });
+//     const order = await db
+//       .collection("users")
+//       .findOne({ _id: new ObjectId(id) });
+//     if (!order) return res.status(404).json({ error: "users not found" });
 
-    res.status(200).json({ id: order._id.toString(), ...order });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-}
+//     res.status(200).json({ id: order._id.toString(), ...order });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// }
 
-// GET /api/users/:id מחזיר לפי id
-export async function getProduct(req, res) {
-  if (!ObjectId.isValid(req.params.username, req.params.password)) {
-    return res.status(400).json({ error: "Invalid id" });
-  }
+// export async function getProduct(req, res) {
+//   if (!ObjectId.isValid(req.params.username, req.params.password)) {
+//     return res.status(400).json({ error: "Invalid id" });
+//   }
 
-  const product = await req.mongoDb
-    .collection("users")
-    .findOne({ _id: new ObjectId(req.params.id) });
+//   const product = await req.mongoDb
+//     .collection("users")
+//     .findOne({ _id: new ObjectId(req.params.id) });
 
-  if (!product) return res.status(404).json({ error: "Not found" });
+//   if (!product) return res.status(404).json({ error: "Not found" });
 
-  res.json(product);
-}
-
+//   res.json(product);
+// }
