@@ -24,7 +24,7 @@ export async function initMongoDb() {
   }
 }
 
-export const createUser = async (req, res) => {
+export async function  createUser (req, res) {
   try {
     const mongoConn = req.mongoConn;
     const { body } = req;
@@ -48,7 +48,8 @@ export const createUser = async (req, res) => {
   }
 };
 
-export const getUser = async (req, res) => {
+
+export async function  getUser (req, res)  {
   try {
     const { username, password } = req.body;
 
