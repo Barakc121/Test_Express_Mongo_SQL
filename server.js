@@ -10,6 +10,8 @@ const PORT = 3000;
 
 app.use(express.json());
 
+app.use("/api/auth", users)
+app.use("/api/users", users)
 
 app.use(async(req, res, next) => {
   req.mongoDb = await initMongoDb();
@@ -34,5 +36,8 @@ app.use("/api/orders", ordersRoutes);
 startServer()
 app.listen(PORT, async () => {
     await initMongoDb()
+    await initSqlDb()
   console.log(`running on http://localhost:${PORT}`);
 });
+
+
