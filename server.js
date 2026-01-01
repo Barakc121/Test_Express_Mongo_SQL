@@ -2,6 +2,9 @@ import express from "express";
 import { conn } from "./utils/mysql.js";
 import { initMongoDb } from "./utils/mongoDb.js";
 
+import productsRoutes from "./routes/products.js";
+import ordersRoutes from "./routes/orders.js";
+
 const app = express();
 const PORT = 3000;
 
@@ -25,6 +28,9 @@ async function startServer() {
     process.exit(1);
   }
 }
+app.use("/api/products", productsRoutes);
+app.use("/api/orders", ordersRoutes);
+
 startServer()
 app.listen(PORT, async () => {
     await initMongoDb()

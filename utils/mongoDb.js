@@ -51,6 +51,22 @@ export async function createuser(req, res) {
 }
 // await createuser({ body: { username: "barak", password: "1234" } });
 
+// GET /api/orders/:id
+export async function getOrder(req, res) {
+  try {
+    const db = req.mongoDb;
+    const { id } = req.params;
+    if (!ObjectId.isValid(id)) return res.status(400).json({ error: "Invalid ID" });
+
+    const order = await db.collection("users").findOne({ _id: new ObjectId(id) });
+    if (!order) return res.status(404).json({ error: "users not found" });
+
+    res.status(200).json({ id: order._id.toString(), ...order });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 // GET /api/users/:id מחזיר לפי id
 export async function getProduct(req, res) {
   if (!ObjectId.isValid(req.params.username, req.params.password)) {
@@ -65,3 +81,4 @@ export async function getProduct(req, res) {
 
   res.json(product);
 }
+
