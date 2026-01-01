@@ -22,6 +22,7 @@
   "homepage": "https://github.com/Barakc121/Test_Express_Mongo_SQL#readme",
   "dependencies": {
     "express": "^5.2.1",
+    "mongodb": "^7.0.0",
     "mysql2": "^3.16.0",
     "nodemon": "^3.1.11",
     "sql2": "^0.0.1"
