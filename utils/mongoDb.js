@@ -1,4 +1,4 @@
-import { MongoClient, ObjectId } from 'mongodb'
+import { MongoClient, ObjectId } from "mongodb";
 
 const mongoClient = new MongoClient(
   "mongodb://admin:password123@localhost:27018/usersDB?authSource=admin"
@@ -6,12 +6,10 @@ const mongoClient = new MongoClient(
 const DB_NAME = "usersDB";
 const COLLECTION_NAME = "users";
 
-
-
 let mongo = null;
 
 export async function initMongoDb() {
-  try {;
+  try {
     await mongoClient.connect();
 
     mongo = mongoClient.db(DB_NAME);
@@ -19,7 +17,6 @@ export async function initMongoDb() {
 
     await usersCollection.createIndex({ name: 1 }, { unique: true });
 
-    console.log("create name");
     return mongo;
   } catch (error) {
     console.error("error");
@@ -27,38 +24,44 @@ export async function initMongoDb() {
   }
 }
 
-// POST /api/orders
-// export async function createOrder(req, res) {
-//   const { producId, username, password } = req.body;
+export async function createuser(req, res) {
+  try {
+    const { username, password } = req.body;
 
-//   const product = await req.mongoDb
-//     .collection("users")
-//     .findOne({ _id: new ObjectId(producId) });
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Missing fields" });
+    }
 
-//   if (!product) return res.status(404).json({ error: "Product not found" });
-  
-//     // await req.mysqlConn.query([producId, username, password ])
+    // MongoDB
+    await req.mongoDb.collection("users").insertOne({
+      name,
+      password,
+    });
 
-//   await req.mongoDb
-//     .collection("users")
-//     .updateOne({ _id: product._id }, { $inc: { totalOrdersCount: 1 } });
-
-//   res.status(201).json({ message: "Order created" });
-// }
-// console.log(createOrder({ username: "dana", password: "1234" }));
+    // MySQL
+    await req.mysqlConn.query(
+      "INSERT INTO users (name, email, password) VALUES (?, ?)",
+      [name, password]
+    );
+    res.status(201).json({ message: "User created" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+// await createuser({ body: { username: "barak", password: "1234" } });
 
 // GET /api/users/:id מחזיר לפי id
+export async function getProduct(req, res) {
+  if (!ObjectId.isValid(req.params.username, req.params.password)) {
+    return res.status(400).json({ error: "Invalid id" });
+  }
 
-// export async function getProduct(req, res) {
-//   if (!ObjectId.isValid(req.params.id)) {
-//     return res.status(400).json({ error: "Invalid id" });
-//   }
+  const product = await req.mongoDb
+    .collection("users")
+    .findOne({ _id: new ObjectId(req.params.id) });
 
-//   const product = await req.mongoDb
-//     .collection("users")
-//     .findOne({ _id: new ObjectId(req.params.id) });
+  if (!product) return res.status(404).json({ error: "Not found" });
 
-//   if (!product) return res.status(404).json({ error: "Not found" });
-
-//   res.json(product);
-// }
+  res.json(product);
+}
